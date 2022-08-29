@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import navbar %}
+
+{% block main %}
+  {{ navbar('/tres', user) }}
+  <h2 class="text-center">Página TRES. {{user.email}}</h2>
+{% endblock %}

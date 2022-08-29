@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sequeface</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="/style.css"> -->
+  <style>
+
+  </style>
+</head>
+
+<body>
+  {% block main %}
+    <h1 class="text-center text-primary">Por implementar</h1>
+  {% endblock %}
+
+  <footer class="row mt-4">
+    <div class="col-4 offset-4">
+      Footer de nuestro sitio
+    </div>
+  </footer>
+
+  <script src="js/bootstrap.min.js"></script>
+
+  {% block scripts %}
+    <script>
+      console.log('Esto viene del template base');
+  </script>
+  {% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "sequeface",
+  "version": "1.0.0",
+  "description": "similar facebook con sequelize",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Mao",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "bootstrap": "^5.2.0",
+    "chokidar": "^3.5.3",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "nunjucks": "^3.2.3",
+    "pg": "^8.8.0",
+    "sequelize": "^6.21.4"
+  }
+}
