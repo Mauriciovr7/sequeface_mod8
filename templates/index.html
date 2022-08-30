@@ -4,4 +4,28 @@
 {% block main %}
   {{ navbar('/', user) }}
   <h2 class="text-center">Hola {{ user.name }}</h2>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-4">
+
+        <form action="/register" method="post" class="bg-white mt-1 p-4 text-black">
+          <div class="mb-3">
+            <label for="" class="form-label">Post a message</label>
+            <textarea name="mensaje" id="" cols="180" rows="10"></textarea>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary fw-bold">Post a message</button>
+          </div>
+          <!-- <div class="mb-3">
+            <h6 class="text-center text-primary fw-bold mt-2">¿Has olvidado la contraseña?</h6>
+            <hr>
+            
+            <div class="d-grid gap-2 col-8 mx-auto">
+              <button type="submit" class="btn btn-success btn-lg nueva float-none nueva align-middle">Crear cuenta nueva</button>
+            </div>
+          </div> -->
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock %}

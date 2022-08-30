@@ -4,9 +4,19 @@ const { Router } = require('express')
 const router = Router()
 // const f = require('./functions')
 
-
-
-router.get('/', (req, res) => {
+// funcion middleware
+function protected_route(req, res, next) { // esta func se pone a las rutas q seran protegidas
+  if (!req.session.user) {
+    req.flash('errors', 'Debe logearse')
+    return res.redirect('/login')
+  }
+  // si llegamos hasta acá, guardamos el usuario de la sesión en una variable de los templates
+  res.locals.user = req.session.user;
+  // finalmente, seguimos el camino original
+  next()
+}
+// rutas
+router.get('/', protected_route, (req, res) => { // ruta protegida
   res.render('index.html', {user: req.session.user})
 })
 

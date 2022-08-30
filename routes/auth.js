@@ -21,9 +21,10 @@ router.post('/login', async (req, res) => {
   const password = req.body.password.trim()
 
   console.log('22 email ', email)
-  if (email) {
 
-    try {
+  try {
+    if (email) {
+
       // 2. intento buscar al usuario en base a su email y contraseña 
       let user_buscado = await User.findOne({
         where: { email }
@@ -33,30 +34,32 @@ router.post('/login', async (req, res) => {
       // if (user_buscado = []) {
       if (!user_buscado) {
         console.log('user no found');
-        req.flash('errors', 'Usuario es inexistente o contraseña incorrecta')
+        req.flash('errors', 'Usuario es inexistente o contraseña incorrecta') // medida de seguridad
         return res.redirect('/login')
       }
 
       // 3. verificamos las contraseñas
-      console.log('compare ', password, user_buscado.password);
+      console.log('compare pass ', password, user_buscado.password);
       const son_coincidentes = await bcrypt.compare(password, user_buscado.password)
       if (!son_coincidentes) {
-        req.flash('errors', 'Usuario es inexistente o contraseña incorrecta')
+        req.flash('errors', 'Usuario es inexistente o contraseña incorrecta') // medida de seguridad
         return res.redirect('/login')
       }
 
       // PARTE FINAL
       req.session.user = {
-        name: user_buscado.name,
+        name: user_buscado.firstName,
         email: user_buscado.email
       }
-      return res.redirect('/')
-
-    } catch (error) {
-      console.log("Error usuario no ingresado: " + error)
-      return res.redirect('/login')
-      // res.status(400).json({ error })
+      console.log('req.session.user ',req.session.user);
+      // return res.redirect('/')
+      res.redirect('/')
     }
+
+  } catch (error) {
+    console.log("Error usuario no ingresado: " + error)
+    return res.redirect('/login')
+    // res.status(400).json({ error })
   }
 
 
@@ -89,30 +92,30 @@ router.post('/register', async (req, res) => {
 
   // 3. Verificamos si el usuario existe o no
   //if (!user_buscado) {
-    console.log('Usuario exista email ',email)
-    try {
-      // 3. validamos que no exista otro usuario con ese mismo correo
-      const current_user = await User.findOne({
-        where: { email }
-      })
-      if (current_user) {
-        req.flash('errors', 'Ese email ya está ocupado')
-        return res.redirect('/register')
-      }
+  console.log('Usuario exista email ', email)
+  try {
+    // 3. validamos que no exista otro usuario con ese mismo correo
+    const current_user = await User.findOne({
+      where: { email }
+    })
+    if (current_user) {
+      req.flash('errors', 'Ese email ya está ocupado')
+      return res.redirect('/register')
+    }
 
-      // 4. Finalmente lo agregamos a la base de datos
-      const password = await bcrypt.hash(pass, 10)
-      await User.create({
-        firstName, lastName, email, password
-      })
-      req.session.user = { firstName, email }
+    // 4. Finalmente lo agregamos a la base de datos
+    const password = await bcrypt.hash(pass, 10)
+    await User.create({
+      firstName, lastName, email, password
+    })
+    req.session.user = { firstName, email }
 
-      // 5. y redirigimos a la ruta principal
-      res.redirect('/')
+    // 5. y redirigimos a la ruta principal
+    res.redirect('/')
 
-    } catch (error) {
-      console.log(error)
-    } /* finally {
+  } catch (error) {
+    console.log(error)
+  } /* finally {
       // res.end()
       // res.redirect('/')
       return res.redirect('/login')
