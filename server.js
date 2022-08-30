@@ -1,9 +1,10 @@
 const express = require('express')
 const session = require('express-session')
-const { User, Transferencia } = require('./db/models')
+const { User, Message, Comment } = require('./db/models')
 // const f = require('./controllers/functions')
 const nunjucks = require('nunjucks')
 const path = require('path')
+const flash = require('connect-flash')
 // const router = require('./routes')
 
 const app = express()
@@ -15,10 +16,13 @@ app.use(session({secret: '***'}))
 
 // se configuran archivos estáticos
 app.use(express.static('./node_modules/bootstrap/dist'))
-// app.use(express.static('public'))
+app.use(express.static('public'))
 
 // se configura uso de formularios
 app.use(express.urlencoded({extended: true}))
+
+// uso de flash
+app.use(flash())
 
 // se configura nunjucks
 nunjucks.configure(path.resolve(__dirname, "templates"), {

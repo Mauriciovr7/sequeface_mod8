@@ -59,3 +59,5 @@ ALTER TABLE IF EXISTS public."Messages"
     ON DELETE SET NULL;
 
 END;
+
+select * from "Users";

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login_face</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    body {
+      background: whitesmoke;
+    }
+
+    /* button.nueva {
+      margin: 1rem auto;
+    } */
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    {% for error in messages.errors %}
+      <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <!-- <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Danger:">
+          <use xlink:href="#exclamation-triangle-fill" />
+        </svg> -->
+        <div>{{ error }}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+    <div class="row">
+      <div class="col-12 col-md-4 offset-md-4 mt-5">
+        <h3 class="text-center text-primary fw-bold">facebook</h3>
+
+        <form action="/register" method="post" class="bg-white mt-4 p-4 text-black shadow rounded">
+          <div class="mb-3">
+            <label for="" class="form-label">Name</label>
+            <input type="text" class="form-control" name="name">
+          </div>
+          <div class="mb-3">
+            <label for="" class="form-label">Surname</label>
+            <input type="text" class="form-control" name="surname">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email">
+            <div id="emailHelp" class="form-text text-black">We will never share your data with another person, <b>
+                really.</b></div>
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Re-Password</label>
+            <input type="password" class="form-control" name="re_password">
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Accept</label>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary fw-bold">Crear cuenta</button>
+          </div>
+          <!-- <div class="mb-3">
+            <h6 class="text-center text-primary fw-bold mt-2">¿Has olvidado la contraseña?</h6>
+            <hr>
+            
+            <div class="d-grid gap-2 col-8 mx-auto">
+              <button type="submit" class="btn btn-success btn-lg nueva float-none nueva align-middle">Crear cuenta nueva</button>
+            </div>
+          </div> -->
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/scripts.js"></script>
+</body>
+
+</html>

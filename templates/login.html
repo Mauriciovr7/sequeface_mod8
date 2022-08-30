@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login_sequeface</title>
+  <title>Login_face</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="/style.css">
   <style>
-   
-   body {
-    background: whitesmoke;
-   }
-    
+    body {
+      background: whitesmoke;
+    }
+
     /* button.nueva {
       margin: 1rem auto;
     } */
   </style>
 </head>
+
 <body>
   <div class="container">
+    {% for error in messages.errors %}
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+      <div>
+        {{ error }}
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
     <div class="row">
-      <div class="col-12 col-md-4 offset-md-4 mt-5">
+      <div class="col-12 col-md-4 offset-md-4 mt-5 bg-white mt-4 p-4 text-white shadow rounded">
         <h3 class="text-center text-primary fw-bold">facebook</h3>
-        <form action="/login" method="post" class="bg-white mt-4 p-4 text-white shadow rounded">
+
+        <form action="/login" method="post" class="">
           <div class="mb-3">
             <!-- <label for="exampleInputEmail1" class="form-label">Email</label> -->
-            <input type="email" class="form-control" name="email" placeholder="Correo elctrónico o numero de teléfono">
+            <input type="email" class="form-control" name="email" placeholder="Correo electrónico o número de teléfono">
             <!-- <div id="emailHelp" class="form-text text-white">Jamás compartiremos tus datos con otra persona.</div> -->
           </div>
           <div class="mb-3">
@@ -37,19 +48,27 @@
             <label class="form-check-label" for="exampleCheck1">Check me out</label>
           </div> -->
           <div class="d-grid gap-2">
-          <button type="submit" class="btn btn-primary fw-bold">Iniciar sesión</button>
-        </div>
+            <button type="submit" class="btn btn-primary fw-bold">Iniciar sesión</button>
+          </div>
           <div class="mb-3">
             <h6 class="text-center text-primary fw-bold mt-2">¿Has olvidado la contraseña?</h6>
             <hr>
-            
-            <div class="d-grid gap-2 col-8 mx-auto">
-              <button type="submit" class="btn btn-success btn-lg nueva float-none nueva align-middle">Crear cuenta nueva</button>
-            </div>
           </div>
         </form>
+
+        <form>
+          <div class="d-grid gap-2 col-8 mx-auto">
+              <a href="/register" class="btn btn-success" type="submit">Crear cuenta
+                nueva</a>
+          </div>
+        </form>
+
       </div>
     </div>
   </div>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="/scripts.js"></script>
 </body>
+
 </html>

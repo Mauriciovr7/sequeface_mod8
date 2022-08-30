@@ -2,74 +2,125 @@
 // const router = express.Router()
 const { Router } = require('express')
 const router = Router()
-// const f = require('./functions')
-
-const USERS = [
-  {
-    name: 'user1',
-    email: "us1@mail.com",
-    password: "1234"
-  },
-  {
-    name: 'user2',
-    email: "us2@gmail.com",
-    password: "2345"
-  },
-  {
-    name: 'user3',
-    email: "us3@gmail.com",
-    password: "3456"
-  }
-]
+const bcrypt = require('bcrypt')
+const { User, Message } = require('../db/models')
+// const DB = require('../db/dbUsers')
+// const f = require('../functions')
 
 //  get login , ruta que carga el formulario del login
 router.get('/login', (req, res) => {
-  res.render('login.html')
+  const messages = req.flash() //
+  res.render('login.html', { messages })
 })
 
 // post login , ruta que procesa el formulario de Login
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
 
   // 1. me traigo los datos del formulario
   const email = req.body.email.trim()
   const password = req.body.password.trim()
 
-  // 2. intento buscar al usuario en base a su email y contraseña 
-  let user_buscado
-  for (let user of USERS) {
-    if (user.email == email) {
-      user_buscado = user
-      break
+  console.log('22 email ', email)
+  if (email) {
+
+    try {
+      // 2. intento buscar al usuario en base a su email y contraseña 
+      let user_buscado = await User.findOne({
+        where: { email }
+      })
+
+      console.log('user_buscado ', user_buscado);
+      // if (user_buscado = []) {
+      if (!user_buscado) {
+        console.log('user no found');
+        req.flash('errors', 'Usuario es inexistente o contraseña incorrecta')
+        return res.redirect('/login')
+      }
+
+      // 3. verificamos las contraseñas
+      console.log('compare ', password, user_buscado.password);
+      const son_coincidentes = await bcrypt.compare(password, user_buscado.password)
+      if (!son_coincidentes) {
+        req.flash('errors', 'Usuario es inexistente o contraseña incorrecta')
+        return res.redirect('/login')
+      }
+
+      // PARTE FINAL
+      req.session.user = {
+        name: user_buscado.name,
+        email: user_buscado.email
+      }
+      return res.redirect('/')
+
+    } catch (error) {
+      console.log("Error usuario no ingresado: " + error)
+      return res.redirect('/login')
+      // res.status(400).json({ error })
     }
   }
 
-  // 3. Verificamos si el usuario existe o no
-  if (!user_buscado) {
-    console.log('Usuario no encontrado')
-    return res.redirect('/login')
-  }
 
-  // 4.  Ahora si sabemos que existe un usuario con ese email, vamos a verificar las contraseñas
-  if (user_buscado.password != password) {
-    console.log('Contraseñas no existen')
-    return res.redirect('/login')
-  }
 
-  // 5. Si el usuario efectivamente existe, y las contraseñas coinciden, entonces lo guardamos en sesión
-  console.log('TODO BIEN')
-  req.session.user = user_buscado
-
-  res.redirect('/')
 })
 
 // get register
 router.get('/register', (req, res) => {
-  res.send('No implementado')
+  const messages = req.flash() //
+
+  console.log(messages);
+  res.render('register.html', messages) // los paso al template
 })
 
 // post register
-router.post('/register', (req, res) => {
-  res.send('No implementado')
+router.post('/register', async (req, res) => {
+  // 1. me traigo los datos del formulario
+  const firstName = req.body.name.trim()
+  const lastName = req.body.surname.trim()
+  const email = req.body.email.trim() // para verificar email habría q usar un servidor de email, ejem firebase
+  const pass = req.body.password.trim() // uar regex
+  const re_password = req.body.re_password.trim()
+
+  // 2. validamos que contraseñas coincidan
+  if (pass != re_password) {
+    console.log('Contraseñas no coinciden')
+    req.flash('errors', 'Las claves no coinciden')
+    return res.redirect('/register')
+  }
+
+  // 3. Verificamos si el usuario existe o no
+  //if (!user_buscado) {
+    console.log('Usuario exista email ',email)
+    try {
+      // 3. validamos que no exista otro usuario con ese mismo correo
+      const current_user = await User.findOne({
+        where: { email }
+      })
+      if (current_user) {
+        req.flash('errors', 'Ese email ya está ocupado')
+        return res.redirect('/register')
+      }
+
+      // 4. Finalmente lo agregamos a la base de datos
+      const password = await bcrypt.hash(pass, 10)
+      await User.create({
+        firstName, lastName, email, password
+      })
+      req.session.user = { firstName, email }
+
+      // 5. y redirigimos a la ruta principal
+      res.redirect('/')
+
+    } catch (error) {
+      console.log(error)
+    } /* finally {
+      // res.end()
+      // res.redirect('/')
+      return res.redirect('/login')
+    } */
+  /* } else {
+    console.log('Usuario ya registrado')
+    return res.redirect('/register')
+  } */
 })
 
 // logout

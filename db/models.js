@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize')
 const db = require('./db_conection.js')
 
-const bcrypt = require('bcrypt')
+// const bcrypt = require('bcrypt')
 
 // User
 const User = db.define('User',
@@ -76,12 +76,12 @@ try {
   console.log(`Error en la sicnronizacion`, err)
 }
 
-User.beforeValidate(function(next) {
+/* User.beforeValidate(function(next) {
   if(this.password != this.confirmPassword) {
   throw new Error('Passwords do not  match.');
   }
   next(); // ejecute el próximo middleware o la siguiente  función (en este caso, las validaciones normales).
-})
+}) */
   
 
 // mas fácil y rápido , hace la union sólo con fkey automática de sequelize (usuarioId)
