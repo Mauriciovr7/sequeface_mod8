@@ -20,7 +20,7 @@ router.post('/login', async (req, res) => {
   const email = req.body.email.trim()
   const password = req.body.password.trim()
 
-  console.log('22 email ', email)
+  // console.log('22 email ', email)
 
   try {
       // 2. intento buscar al usuario en base a su email y contraseña 
@@ -129,6 +129,7 @@ router.post('/register', async (req, res) => {
 router.get('/logout', (req, res) => {
   req.session.user = null
   req.session.mensajes = null
+  req.session.likes = null
   res.redirect('/login')
 })
 

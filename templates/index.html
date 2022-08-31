@@ -11,49 +11,132 @@
       <form action="/message" method="post" class="bg-white mt-1 p-4 text-black">
         <div class="mb-3">
           <label for="" class="form-label">Post a message</label>
-          <textarea name="mensaje" id="" cols="140" rows="10" required></textarea>
+          <textarea name="mensaje" id="" cols="140" rows="5" required></textarea>
         </div>
         <div class="d-grid gap-2">
           <button type="submit" class="btn btn-primary fw-bold">Post a message</button>
         </div>
-        <!-- <div class="mb-3">
-            <h6 class="text-center text-primary fw-bold mt-2">¿Has olvidado la contraseña?</h6>
-            <hr>
-            
-            <div class="d-grid gap-2 col-8 mx-auto">
-              <button type="submit" class="btn btn-success btn-lg nueva float-none nueva align-middle">Crear cuenta nueva</button>
-            </div>
-          </div> -->
       </form>
 
     </div>
   </div>
 </div>
-
+<!-- params -->
 <div class="container mt-5 bg-primary bg-opacity-25 p-4">
+  {% for ms in mensajes %}
   <div class="row">
     <div class="list-group barra overflow-auto">
-      {% for ms in mensajes %}
-      <h6><b> {{ms.us}} </b> {{ms.fecha}} {{likes}}</h6>
+      <h6><b>{{ms.id}} {{ms.us}} </b> {{ms.fecha}} </h6>
+
+      <h5><b> Likes: </b>
+        <h6 id="lkk{{ms.id}}"> {{ms.likes}}</h6>
+      </h5>
+
       <p><a class="list-group-item list-group-item-action">{{ms.msj}}</a></p>
-      <div class="btn-group mb-5" role="group" aria-label="Basic example">
-        
-        <form method="post" action="/like">
-          <input type="hidden" name="opcion" value="like" class="mb-3">
-          <button type="submit" class="btn btn-outline-primary">Me gusta</button>
-        </form>
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#collapse"
-          aria-expanded="false" aria-controls="collapse">Comentar</button>
-        <button type="button" class="btn btn-outline-primary">Compartir</button>
-        <br>
-      </div>
+      
+      <article class="col-sm-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">comment{{ms.id}}</h5>
+            <span data-id="{{ms.id}}" class="badge bg-primary rounded-pill">0</span>
+            
+            <!-- ------------------------------------------------------------------------------------------- -->
+            <button id="{{ms.id}}" onclick="agregarlikes(event, {{ms.id}})" class="btn btn-primary" data-like="megusta">{{ms.id}}Like</button>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- <p><a href="/like/{{ms.id}}" onclick="add_like(event)" class="list-group-item list-group-item-action">
+          <span data-href="/like/{{ms.id}}">{{ms.likes}}</span>
+          {{ms.msj}}</a></p>
+        <button onclick="likes('{{ms.likes}}')" class="btn btn-outline-primary">Me gusta</button> -->
+
+      <!-- <div class="btn-group mb-5" role="group" aria-label="Basic example">
+          <form action="/like/" + {{ms.id}} method="post">
+            <input type="hidden" name="like" value=`${ms.id}` class="mb-3">
+            <button type="submit" class="btn btn-outline-primary">Me gusta</button>
+          </form>
+
+          <form id="1" action="/like/" + {{ms.id}} method="post" hidden>
+            <input type="hidden" name="like" value=`${ms.id}` class="mb-3">
+            <button onclick="likes()" class="btn btn-outline-primary">Me gusta</button>
+          </form>
+          <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#collapse"
+            aria-expanded="false" aria-controls="collapse">Comentar</button>
+          <button onclick="showForm(1)" type="button" class="btn btn-outline-primary">Compartir</button>          
+          <br>
+        </div> -->
       <div class="collapse" id="collapse">
         <div class=" card card-body">
-          <textarea name="" id="" cols="100" rows="2"></textarea>
+          <textarea name="" id="" cols="100" rows="2" placeholder="Add a comment..."></textarea>
         </div>
       </div>
-      {% endfor %}
     </div>
   </div>
+
+  <template id="template">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="badge bg-primary rounded-pill">14</span>
+    </li>
+  </template>
+  {% endfor %}
 </div>
+<script>
+  const likes = document.querySelector("#likes");
+  const template = document.querySelector("#template");
+  const fragment = document.createDocumentFragment();
+
+  // const agregar = document.querySelectorAll(".card button");
+
+  const likesObjeto = {};
+
+  async function agregarlikes(ev , id) {
+    ev.preventDefault()
+    console.log('add', id);
+    await fetch(`/like/${id}`)
+    console.log('id ',id);
+    // const span_mensajes = document.querySelector(`span[data-id="${id}]"`)
+    const h6_lk = document.getElementById(`lkk${id}`)
+
+    // let num_likes = parseInt(span_memsaje.innerHTML)
+    let num_likes = parseInt(h6_lk.innerHTML)
+
+    num_likes++
+    h6_lk.innerHTML = num_likes
+
+    // span_mensaje.innerHTML = num_likes
+
+  }
+
+  // usar jquery *****************************************************
+/*   const likes = async (ev, lks) => {
+    ev.preventDefault()
+
+    await fetch(`/like/${id}`)
+
+    const span_mensajes = document.querySelector(`span[data-id="${id}"`)
+
+    let num_likes = parseInt(span_memsaje.innerHTML)
+    num_likes++
+    span_mensaje.innerHTML = num_likes
+
+    console.log('lks ', lks);
+    lks++
+    console.log('lks new ', lks);
+    document.getElementById('lkk').innerHTML = '5'
+    // console.log('h5 ', $("#lkk").val());'
+
+    // const like_actual = $("#roommatesSelect").val()
+
+  }
+
+ */
+  /* const showForm = (id) => {
+    let comment = document.querySelector('#form_' + id)
+    form_comment.removeAttribute('hidden'), false)
+  } */
+
+
+</script>
 {% endblock %}

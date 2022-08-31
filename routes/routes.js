@@ -16,11 +16,32 @@ function protected_route(req, res, next) { // esta func se pone a las rutas q se
   // finalmente, seguimos el camino original
   next()
 }
+
 // rutas
-router.get('/', protected_route, (req, res) => { // ruta protegida
+router.get('/', protected_route, async (req, res) => { // ruta protegida
+  /* if (req.session.mensajes == undefined) {
+    req.session.mensajes = []
+  }
+  if (req.session.likes == undefined) {
+    req.session.likes = 0
+  }
+
+  const mess = await Message.findAll({ include: 'user' });
+
+  mess.forEach((item) => {
+    // messas.push(item.UserId, item.message, item.createdAt)
+    const us=item.user.firstName
+    const msj=item.message
+    const fecha=item.createdAt
+    const id=item.id
+    console.log('id us, msj, fecha ', id, us, msj, fecha);
+
+    req.session.mensajes.push({ id, us, msj, fecha })
+  }) */
+
   console.log('us ',req.session.user);
   console.log('msj ',req.session.mensajes);
-  console.log('msj ',req.session.likes);
+  console.log('lks ',req.session.likes);
 
   res.render('index.html', {user: req.session.user, mensajes: req.session.mensajes, likes: req.session.likes })
 })
@@ -33,121 +54,7 @@ router.get('/tres', (req, res) => {
   res.render('tres.html', {user: req.session.user})
 })
 
-// user POST
-/* router.post('/user', async (req, res) => {
-
-  try {
-
-    const form = await f.getForm(req)
-    const nombre = form.nombre.replace(/\s+/g, ' ').trim()
-    const balance = form.balance.trim()
-
-    if (f.userValid(nombre) && f.balanceValid(balance)) {
-
-      const usName = await User.findOne({
-        where: { nombre },
-        include: [{
-          model: Transferencia
-        }]
-      })
-
-      if (usName != null) { if (usName.nombre) { throw 'user ya existe' } }
-
-      await User.create({
-        nombre,
-        balance
-      })
-      res.json({})
-    }
-
-  } catch (error) {
-
-    console.log("Error user no ingresado: " + error)
-    res.status(400).json({ error })
-  }
-})
-
- */// users GET
-/* router.get('/users', async (req, res) => {
-
-  try {
-
-    const users = await User.findAll({
-      include: [{
-        model: Transferencia
-      }]
-    })
-
-    res.json(users)
-
-  } catch (error) {
-    console.log(error)
-  }
-})
-
- */// user PUT
-/* router.put('/user', async (req, res) => {
-  const form = await f.getForm(req)
-
-  const nombre = form.name
-  const balance = form.balance
-  const id = req.query.id
-  if (id) {
-
-    try {
-      if (f.userValid(nombre) && f.balanceValid(balance)) {
-        const user = await User.findOne({
-          where: { id },
-          include: [{
-            model: Transferencia
-          }]
-        })
-
-        await User.update(
-          {
-            nombre,
-            balance
-          },
-          {
-            where: { id }
-          })
-        res.json(user)
-
-      }
-
-    } catch (error) {
-      console.log("Error user no ingresado: " + error)
-      res.status(400).json({ error })
-    }
-  }
-
-})
-
- */// user DELETE
-/* app.delete('/user', async (req, res) => {
-  const id = req.query.id
-  if (id) {
-    try {
-
-      await Transferencia.destroy({
-        where: { emisor: id }
-      })
-
-      await User.destroy({
-        where: { id }
-      })
-
-
-      res.json({})
-    } catch (error) {
-      console.log("Surgió un error: " + error)
-      return res.status(400).redirect('/') // 400 error
-    }
-  }
-})
- */
-
-// transferencia POST
+// post message
 router.post('/message', async (req, res) => {
   if (req.session.mensajes == undefined) {
     req.session.mensajes = []
@@ -178,16 +85,29 @@ router.post('/message', async (req, res) => {
     })
 
     const mess = await Message.findAll({ include: 'user' });
+
+    console.log('mess ', mess);
+    /*
+    const mess = await Message.findByPk(1, { include: 'user' });
+    console.log('mess ', mess);
+    console.log('mess *****************',mess.toJSON())
+    console.log('obj ', mess.user.firstName);
+    */
+    // res.send({mess})
     // const messas = []
+
     mess.forEach((item) => {
       // messas.push(item.UserId, item.message, item.createdAt)
-      const us=item.UserId
+      const id = item.id
+      const likes = item.likes
+      const us=item.user.firstName
       const msj=item.message
       const fecha=item.createdAt
-      console.log('us, msj, fecha ',us, msj, fecha);
+      console.log('id likes, us, msj, fecha ',id, us, msj, fecha);
 
-      req.session.mensajes.push({ us, msj, fecha })
+      req.session.mensajes.push({ id, likes, us, msj, fecha })
     })
+    //req.session.mensajes.push({ us, msj, fecha })
     
     res.redirect('/')
 
@@ -198,20 +118,32 @@ router.post('/message', async (req, res) => {
   }
 })
 
-router.post('/like', (req, res) => {
-  const opcion = req.body.opcion
+// router.post('/like', async (req, res) => {
+router.post('/like/:opcion', async (req, res) => { // req.params.opcion
+  console.log('params ', req.params.opcion);
+  console.log('body ', req.body);
+  const like = req.body.like
   const likes = 1
-  console.log('op ',opcion);
+  console.log('lk ',like);
 
   if (req.session.likes == undefined) {
     req.session.likes = 0
   }
 
-  if (opcion) {
+  if (like) {
 
     req.session.likes += likes
     console.log('likes ',req.session.likes);
   }
+
+  await Message.update(
+    {
+      likes: req.session.likes
+    },
+    {
+      where: { id: like }
+    })
+
   res.redirect('/')
 })
 
@@ -221,3 +153,9 @@ router.get('*', (req, res) => {
 })
 
 module.exports = router
+
+/*
+BONUS para el Muro: 
+- Debe poder llevar registro de qué usuario le dió like a qué mensaje. Debe poder eliminar el propio like de un mensaje. 
+- Al agregar un mensaje, se puede (opcionalmente) adjuntar una imagen
+*/

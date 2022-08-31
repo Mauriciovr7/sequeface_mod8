@@ -49,6 +49,10 @@ const Message = db.define('message', {
   message: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+  likes: {
+    type: DataTypes.INTEGER,
+    allowNull: true
   }
 }, { timestamps: true })
 
