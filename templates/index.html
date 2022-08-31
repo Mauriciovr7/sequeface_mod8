@@ -2,21 +2,21 @@
 {% from 'macros.html' import navbar %}
 
 {% block main %}
-  {{ navbar('/', user) }}
-  <h2 class="text-center">Hola {{ user.name }}</h2>
-  <div class="container">
-    <div class="row">
-      <div class="col-12 col-md-4">
+{{ navbar('/', user) }}
+<h2 class="text-center">Hola {{ user.name }}</h2>
+<div class="container">
+  <div class="row">
+    <div class="col-12 col-md-4">
 
-        <form action="/register" method="post" class="bg-white mt-1 p-4 text-black">
-          <div class="mb-3">
-            <label for="" class="form-label">Post a message</label>
-            <textarea name="mensaje" id="" cols="180" rows="10"></textarea>
-          </div>
-          <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary fw-bold">Post a message</button>
-          </div>
-          <!-- <div class="mb-3">
+      <form action="/message" method="post" class="bg-white mt-1 p-4 text-black">
+        <div class="mb-3">
+          <label for="" class="form-label">Post a message</label>
+          <textarea name="mensaje" id="" cols="140" rows="10" required></textarea>
+        </div>
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary fw-bold">Post a message</button>
+        </div>
+        <!-- <div class="mb-3">
             <h6 class="text-center text-primary fw-bold mt-2">¿Has olvidado la contraseña?</h6>
             <hr>
             
@@ -24,8 +24,36 @@
               <button type="submit" class="btn btn-success btn-lg nueva float-none nueva align-middle">Crear cuenta nueva</button>
             </div>
           </div> -->
-        </form>
-      </div>
+      </form>
+
     </div>
   </div>
+</div>
+
+<div class="container mt-5 bg-primary bg-opacity-25 p-4">
+  <div class="row">
+    <div class="list-group barra overflow-auto">
+      {% for ms in mensajes %}
+      <h6><b> {{ms.us}} </b> {{ms.fecha}} {{likes}}</h6>
+      <p><a class="list-group-item list-group-item-action">{{ms.msj}}</a></p>
+      <div class="btn-group mb-5" role="group" aria-label="Basic example">
+        
+        <form method="post" action="/like">
+          <input type="hidden" name="opcion" value="like" class="mb-3">
+          <button type="submit" class="btn btn-outline-primary">Me gusta</button>
+        </form>
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#collapse"
+          aria-expanded="false" aria-controls="collapse">Comentar</button>
+        <button type="button" class="btn btn-outline-primary">Compartir</button>
+        <br>
+      </div>
+      <div class="collapse" id="collapse">
+        <div class=" card card-body">
+          <textarea name="" id="" cols="100" rows="2"></textarea>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

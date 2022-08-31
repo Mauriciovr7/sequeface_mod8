@@ -23,14 +23,12 @@ router.post('/login', async (req, res) => {
   console.log('22 email ', email)
 
   try {
-    if (email) {
-
       // 2. intento buscar al usuario en base a su email y contraseña 
       let user_buscado = await User.findOne({
         where: { email }
       })
 
-      console.log('user_buscado ', user_buscado);
+      console.log('user_buscado ', user_buscado.lastName);
       // if (user_buscado = []) {
       if (!user_buscado) {
         console.log('user no found');
@@ -49,12 +47,12 @@ router.post('/login', async (req, res) => {
       // PARTE FINAL
       req.session.user = {
         name: user_buscado.firstName,
-        email: user_buscado.email
+        email: user_buscado.email,
+        last: user_buscado.lastName
       }
       console.log('req.session.user ',req.session.user);
       // return res.redirect('/')
       res.redirect('/')
-    }
 
   } catch (error) {
     console.log("Error usuario no ingresado: " + error)
@@ -74,7 +72,7 @@ router.get('/register', (req, res) => {
   res.render('register.html', messages) // los paso al template
 })
 
-// post register
+// *** post register
 router.post('/register', async (req, res) => {
   // 1. me traigo los datos del formulario
   const firstName = req.body.name.trim()
@@ -98,6 +96,7 @@ router.post('/register', async (req, res) => {
     const current_user = await User.findOne({
       where: { email }
     })
+    console.log('user ', current_user);
     if (current_user) {
       req.flash('errors', 'Ese email ya está ocupado')
       return res.redirect('/register')
@@ -111,7 +110,7 @@ router.post('/register', async (req, res) => {
     req.session.user = { firstName, email }
 
     // 5. y redirigimos a la ruta principal
-    res.redirect('/')
+    res.redirect('/login') // *********************************era /
 
   } catch (error) {
     console.log(error)
@@ -126,9 +125,10 @@ router.post('/register', async (req, res) => {
   } */
 })
 
-// logout
+// logout y limpieza de sessiones
 router.get('/logout', (req, res) => {
   req.session.user = null
+  req.session.mensajes = null
   res.redirect('/login')
 })
 

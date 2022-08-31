@@ -4,7 +4,7 @@ const db = require('./db_conection.js')
 // const bcrypt = require('bcrypt')
 
 // User
-const User = db.define('User',
+const User = db.define('user',
   {
     firstName: {
       type:
@@ -19,7 +19,7 @@ const User = db.define('User',
     email: {
       type:
         DataTypes.STRING,
-      allowNull: false,
+        primaryKey: true,
       validate: {
         isEmail: { // comprueba que el patrón de correo electrónico sea correcto. msg: "Must be a valid email."
         }
@@ -45,7 +45,7 @@ const User = db.define('User',
   }, { timestamps: true });
 
 // Message
-const Message = db.define('Message', {
+const Message = db.define('message', {
   message: {
     type: DataTypes.TEXT,
     allowNull: false
@@ -53,21 +53,40 @@ const Message = db.define('Message', {
 }, { timestamps: true })
 
 // Comment
-const Comment = db.define('Comment', {
+const Comment = db.define('comment', {
   comment: {
     type: DataTypes.TEXT,
     allowNull: false
   }
 }, { timestamps: true })
 
-User.hasMany(Message) // ok
-User.hasMany(Comment) // ok
+// relations
+User.hasMany(Message, {
+  foreignKey: 'UserId',
+  sourceKey: 'email'
+}) // ok
+User.hasMany(Comment, {
+  foreignKey: 'UserId',
+  sourceKey: 'email'
+}) // ok
 
-Message.belongsTo(User) // ok Userid
-Message.hasMany(Comment) // ok
+Message.belongsTo(User, {
+  foreignKey: 'UserId',
+  targetId: 'email'
+}) // ok Userid
+Message.hasMany(Comment, {
+  foreignKey: 'MessageId',
+  sourceKey: 'id'
+}) // ok
 
-Comment.belongsTo(Message) // ok Messageid
-Comment.belongsTo(User) // ok Userid
+Comment.belongsTo(Message, {
+  foreignKey: 'MessageId',
+  sourceKey: 'id'
+}) // ok Messageid
+Comment.belongsTo(User, {
+  foreignKey: 'UserId',
+  sourceKey: 'email'
+}) // ok Userid
 // Transferencia.belongsTo(Usuario, { foreignKey: "receptor", onDelete: 'CASCADE' })
 
 try {
@@ -85,4 +104,4 @@ try {
   
 
 // mas fácil y rápido , hace la union sólo con fkey automática de sequelize (usuarioId)
-module.exports = { User } //, Transferencia }
+module.exports = { User, Message } //, Transferencia }

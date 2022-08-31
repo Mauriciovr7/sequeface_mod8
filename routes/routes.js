@@ -2,6 +2,7 @@
 // const router = express.Router()
 const { Router } = require('express')
 const router = Router()
+const { User, Message } = require('../db/models')
 // const f = require('./functions')
 
 // funcion middleware
@@ -17,7 +18,11 @@ function protected_route(req, res, next) { // esta func se pone a las rutas q se
 }
 // rutas
 router.get('/', protected_route, (req, res) => { // ruta protegida
-  res.render('index.html', {user: req.session.user})
+  console.log('us ',req.session.user);
+  console.log('msj ',req.session.mensajes);
+  console.log('msj ',req.session.likes);
+
+  res.render('index.html', {user: req.session.user, mensajes: req.session.mensajes, likes: req.session.likes })
 })
 
 router.get('/dos', (req, res) => {
@@ -29,7 +34,7 @@ router.get('/tres', (req, res) => {
 })
 
 // user POST
-router.post('/user', async (req, res) => {
+/* router.post('/user', async (req, res) => {
 
   try {
 
@@ -62,8 +67,8 @@ router.post('/user', async (req, res) => {
   }
 })
 
-// users GET
-router.get('/users', async (req, res) => {
+ */// users GET
+/* router.get('/users', async (req, res) => {
 
   try {
 
@@ -80,8 +85,8 @@ router.get('/users', async (req, res) => {
   }
 })
 
-// user PUT
-router.put('/user', async (req, res) => {
+ */// user PUT
+/* router.put('/user', async (req, res) => {
   const form = await f.getForm(req)
 
   const nombre = form.name
@@ -118,7 +123,7 @@ router.put('/user', async (req, res) => {
 
 })
 
-// user DELETE
+ */// user DELETE
 /* app.delete('/user', async (req, res) => {
   const id = req.query.id
   if (id) {
@@ -141,114 +146,74 @@ router.put('/user', async (req, res) => {
   }
 })
  */
-// transferencia POST
-/* app.post('/transferencia', async (req, res) => {
-  try {
-    const form = await f.getForm(req)
-    const emisor = form.emisor
-    const receptor = form.receptor
-    const valor = form.monto
 
-    const us_emisor = await User.findOne({
-      where: { nombre: emisor },
-      include: [{
-        model: Transferencia
-      }]
+// transferencia POST
+router.post('/message', async (req, res) => {
+  if (req.session.mensajes == undefined) {
+    req.session.mensajes = []
+  }
+  if (req.session.likes == undefined) {
+    req.session.likes = 0
+  }
+  try {
+    const mensaje = req.body.mensaje.trim()
+    
+    if (mensaje == '') {
+      console.log('sin mensaje ')
+      return res.redirect('/')
+      
+    }
+    console.log('mensaje user id ', mensaje, req.session.user);
+    const userEmail = req.session.user.email
+
+    console.log('userEmail ',userEmail);
+   /*  const us_id = await User.findOne({
+      where: { email: userEmail }
+    }) */
+    // console.log('us_id ', us_id);
+
+    await Message.create({
+      UserId: userEmail,
+      message: mensaje      
     })
 
-    if (f.balanceValid(valor, us_emisor.balance) && f.emisorValid(emisor, receptor)) {
+    const mess = await Message.findAll({ include: 'user' });
+    // const messas = []
+    mess.forEach((item) => {
+      // messas.push(item.UserId, item.message, item.createdAt)
+      const us=item.UserId
+      const msj=item.message
+      const fecha=item.createdAt
+      console.log('us, msj, fecha ',us, msj, fecha);
 
-      const us_receptor = await User.findOne({
-        where: { nombre: receptor },
-        include: [{
-          model: Transferencia
-        }]
-      })
-
-      await Transferencia.create({
-        valor,
-        emisor: us_emisor.id,
-        receptor: us_receptor.id
-      })
-
-      const user = await User.findOne({
-        where: { id: us_emisor.id },
-        include: [{
-          model: Transferencia
-        }]
-      })
-
-      const nuevo_valor = user.balance - valor
-
-      await User.update(
-        {
-          balance: nuevo_valor
-        },
-        {
-          where: { id: us_emisor.id }
-        })
-      const nuevo_valor_receptor = parseInt(us_receptor.balance) + parseInt(valor)
-
-      await User.update(
-        {
-          balance: nuevo_valor_receptor
-        },
-        {
-          where: { id: us_receptor.id }
-        })
-      res.json(user)
-    }
+      req.session.mensajes.push({ us, msj, fecha })
+    })
+    
+    res.redirect('/')
 
   } catch (error) {
-    res.status(400).json({ error })
+    res.status(400).redirect('/')
+
+    // res.status(400).json({ error })
   }
-}) */
+})
 
-// transferencias GET
-/* app.get('/transferencias', async (req, res) => {
-  try {
-    const transferencias = await Transferencia.findAll({ include: 'user' })
+router.post('/like', (req, res) => {
+  const opcion = req.body.opcion
+  const likes = 1
+  console.log('op ',opcion);
 
-    let datos = []
-    for (const transferencia of transferencias) {
-      emisor = await User.findOne({
-        where: { id: transferencia.emisor }
-      }, {
-        attributes: ['nombre'],
-        include: [{
-          model: Transferencia
-        }]
-      })
-
-      receptor = await User.findOne({
-        where: { id: transferencia.receptor }
-      }, {
-        attributes: ['nombre'],
-        include: [{
-          model: Transferencia
-        }]
-      });
-      (receptor === null) ? receptor = 'Eliminado' : receptor = receptor.nombre
-      emisor = emisor.nombre
-      datos.push([transferencia.id, emisor, receptor, transferencia.valor, transferencia.createdAt])
-    }
-
-    res.send(datos)
-
-  } catch (error) {
-    console.log(error)
+  if (req.session.likes == undefined) {
+    req.session.likes = 0
   }
-}) */
 
-/* app.use((req, res) => {
-  res.status(404).send(`
-  <html>
-    <h2>...ruta no existe</h2>
-    <a href="/">
-      <button>Volver</button>
-    </a>
-  </html>`)
-}) */
+  if (opcion) {
+
+    req.session.likes += likes
+    console.log('likes ',req.session.likes);
+  }
+  res.redirect('/')
+})
 
 // ruta 404
 router.get('*', (req, res) => {
