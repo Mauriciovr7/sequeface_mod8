@@ -108,7 +108,5 @@ try {
   }
   next(); // ejecute el próximo middleware o la siguiente  función (en este caso, las validaciones normales).
 }) */
-  
 
-// mas fácil y rápido , hace la union sólo con fkey automática de sequelize (usuarioId)
-module.exports = { User, Message } //, Transferencia }
+module.exports = { User, Message, Comment } //, Transferencia }

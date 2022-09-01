@@ -24,6 +24,13 @@ const pool = new Pool({ // nuevo *****
   database: 'sequeface',
   user: 'postgres',
   password: require('./clave').clave
+  /*
+  min: 3,
+  max: 20,
+  idleTimeoutMillis: 5000,
+  connectionTimeoutMillis: 2000,
+  port: 5432
+  */
 })
 
 app.use(session({

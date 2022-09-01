@@ -107,7 +107,7 @@ router.post('/register', async (req, res) => {
     await User.create({
       firstName, lastName, email, password
     })
-    req.session.user = { firstName, email }
+    req.session.user = { firstName, lastName, email } ////////////
 
     // 5. y redirigimos a la ruta principal
     res.redirect('/login') // *********************************era /

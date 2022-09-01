@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS public.messages
 (
     id integer NOT NULL DEFAULT nextval('messages_id_seq'::regclass),
     message text COLLATE pg_catalog."default" NOT NULL,
+    likes integer,
     "createdAt" timestamp with time zone NOT NULL,
     "updatedAt" timestamp with time zone NOT NULL,
     "UserId" character varying(255) COLLATE pg_catalog."default",
@@ -56,7 +57,7 @@ ALTER TABLE IF EXISTS public.comments
     ON UPDATE CASCADE
     ON DELETE SET NULL;
 
-
+select * from messages;
 ALTER TABLE IF EXISTS public.messages
     ADD CONSTRAINT "messages_UserId_fkey" FOREIGN KEY ("UserId")
     REFERENCES public.users (email) MATCH SIMPLE
