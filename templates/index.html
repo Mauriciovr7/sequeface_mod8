@@ -93,17 +93,23 @@
 
   async function agregarlikes(ev , id) {
     ev.preventDefault()
-    console.log('add', id);
-    await fetch(`/like/${id}`)
+    console.log('add', id)
+
     console.log('id ',id);
     // const span_mensajes = document.querySelector(`span[data-id="${id}]"`)
     const h6_lk = document.getElementById(`lkk${id}`)
-
+    
     // let num_likes = parseInt(span_memsaje.innerHTML)
     let num_likes = parseInt(h6_lk.innerHTML)
-
+    
     num_likes++
     h6_lk.innerHTML = num_likes
+    await fetch(`/like/${id}`, {
+          method: "POST",
+          body: JSON.stringify({
+            id,
+          }),
+        })
 
     // span_mensaje.innerHTML = num_likes
 

@@ -40,10 +40,10 @@ router.get('/', protected_route, async (req, res) => { // ruta protegida
   }) */
 
   console.log('us ',req.session.user);
-  console.log('msj ',req.session.mensajes);
-  console.log('lks ',req.session.likes);
+  // console.log('msj ',req.session.mensajes);
+  // console.log('lks ',req.session.likes);
 
-  res.render('index.html', {user: req.session.user, mensajes: req.session.mensajes, likes: req.session.likes })
+  res.render('index.html', {user: req.session.user, mensajes: req.session.mensajes}) //, likes: req.session.likes })
 })
 
 router.get('/dos', (req, res) => {
@@ -59,9 +59,7 @@ router.post('/message', async (req, res) => {
   if (req.session.mensajes == undefined) {
     req.session.mensajes = []
   }
-  if (req.session.likes == undefined) {
-    req.session.likes = 0
-  }
+  const likes = 0
   try {
     const mensaje = req.body.mensaje.trim()
     
@@ -81,12 +79,13 @@ router.post('/message', async (req, res) => {
 
     await Message.create({
       UserId: userEmail,
-      message: mensaje      
+      message: mensaje,
+      likes
     })
 
     const mess = await Message.findAll({ include: 'user' });
 
-    console.log('mess ', mess);
+    // console.log('mess ', mess);
     /*
     const mess = await Message.findByPk(1, { include: 'user' });
     console.log('mess ', mess);
@@ -103,7 +102,7 @@ router.post('/message', async (req, res) => {
       const us=item.user.firstName
       const msj=item.message
       const fecha=item.createdAt
-      console.log('id likes, us, msj, fecha ',id, us, msj, fecha);
+      console.log('id, likes, us, msj, fecha ',id, likes, us, msj, fecha);
 
       req.session.mensajes.push({ id, likes, us, msj, fecha })
     })
@@ -119,29 +118,28 @@ router.post('/message', async (req, res) => {
 })
 
 // router.post('/like', async (req, res) => {
-router.post('/like/:opcion', async (req, res) => { // req.params.opcion
-  console.log('params ', req.params.opcion);
-  console.log('body ', req.body);
-  const like = req.body.like
+router.post('/like/:id', async (req, res) => { // req.params.id // id ok
+  // const likes = 1
+  const id = req.params.id
+  console.log('post likesssss');
+  console.log('params ', req.params.id); // ok
+  /* const like = req.body.like
   const likes = 1
-  console.log('lk ',like);
+  console.log('lk ',like); */
 
-  if (req.session.likes == undefined) {
+  /* if (req.session.likes == undefined) {
     req.session.likes = 0
-  }
-
-  if (like) {
+  } 
 
     req.session.likes += likes
-    console.log('likes ',req.session.likes);
-  }
+    console.log('likes ',req.session.likes); */
 
   await Message.update(
     {
-      likes: req.session.likes
+      likes: req.session.likes++
     },
     {
-      where: { id: like }
+      where: { id }
     })
 
   res.redirect('/')

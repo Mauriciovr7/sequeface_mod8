@@ -52,7 +52,10 @@ const Message = db.define('message', {
   },
   likes: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
+    validate: {
+      min: 0
+    }
   }
 }, { timestamps: true })
 
